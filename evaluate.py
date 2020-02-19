@@ -15,14 +15,15 @@ import os
 import torch
 import argparse
 import numpy as np
+from tqdm import tqdm
 from PIL import Image
 
 import torch.nn as nn
 from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
 
-from model import network
-from datasets import SCHPDataset, transform_logits
+from .model import network
+from .datasets import SCHPDataset, transform_logits
 
 
 dataset_settings = {
@@ -112,7 +113,7 @@ def main():
     palette = get_palette(num_classes)
 
     with torch.no_grad():
-        for idx, batch in enumerate(dataloader):
+        for idx, batch in tqdm(enumerate(dataloader), len=len(dataloader)):
 
             image, meta = batch
             img_name = meta['name'][0]
@@ -132,7 +133,7 @@ def main():
 
             parsing_result_path = os.path.join(args.output, img_name[:-4]+'.png')
             output_img = Image.fromarray(np.asarray(parsing_result, dtype=np.uint8))
-            output_img.putpalette(palette)
+            output_img.putpalette(palette)  # colors the labels it seems
             output_img.save(parsing_result_path)
             if args.logits:
                 logits_result_path = os.path.join(args.output, img_name[:-4] + '.npy')
