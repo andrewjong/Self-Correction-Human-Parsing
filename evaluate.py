@@ -59,6 +59,7 @@ def get_arguments():
     parser.add_argument("--input", type=str, default='', help="path of input image folder.")
     parser.add_argument("--output", type=str, default='', help="path of output image folder.")
     parser.add_argument("--logits", action='store_true', default=False, help="whether to save the logits.")
+    parser.add_argument("--argmax_logits", action='store_true', default=False, help="Save logits in compressed argmax form")
 
     return parser.parse_args()
 
@@ -136,8 +137,14 @@ def main():
             output_img.putpalette(palette)  # colors the labels it seems
             output_img.save(parsing_result_path)
             if args.logits:
+                fname = img_name[:-4]
                 logits_result_path = os.path.join(args.output, img_name[:-4] + '.npy')
-                np.save(logits_result_path, logits_result)
+                if args.argmax_logits:
+                    logits_result += "c"  # c for compressed
+                    result = parsing_result
+                else:
+                    result = logits_result
+                np.save(logits_result_path, result)
     return
 
 
