@@ -22,8 +22,8 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
 
-from .model import network
-from .datasets import SCHPDataset, transform_logits
+from model import network
+from datasets import SCHPDataset, transform_logits
 
 
 dataset_settings = {
@@ -114,7 +114,7 @@ def main():
     palette = get_palette(num_classes)
 
     with torch.no_grad():
-        for idx, batch in tqdm(enumerate(dataloader), len=len(dataloader)):
+        for idx, batch in tqdm(enumerate(dataloader), total=len(dataloader)):
 
             image, meta = batch
             img_name = meta['name'][0]
@@ -140,7 +140,7 @@ def main():
                 fname = img_name[:-4]
                 logits_result_path = os.path.join(args.output, img_name[:-4] + '.npy')
                 if args.argmax_logits:
-                    logits_result += "c"  # c for compressed
+                    logits_result_path += "c"  # c for compressed
                     result = parsing_result
                 else:
                     result = logits_result
