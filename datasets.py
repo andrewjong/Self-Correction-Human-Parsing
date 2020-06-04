@@ -11,6 +11,7 @@
              LICENSE file in the root directory of this source tree.
 """
 
+from glob import glob
 import os
 import json
 import cv2
@@ -98,7 +99,7 @@ class SCHPDataset(data.Dataset):
         self.aspect_ratio = input_size[1] * 1.0 / input_size[0]
         self.input_size = np.asarray(input_size)
 
-        self.file_list = os.listdir(self.root)
+        self.file_list = glob(f"{self.root}/**/*.png")
 
     def __len__(self):
         return len(self.file_list)
@@ -119,8 +120,8 @@ class SCHPDataset(data.Dataset):
         return center, scale
 
     def __getitem__(self, index):
-        img_name = self.file_list[index]
-        img_path = os.path.join(self.root, img_name)
+        img_path = self.file_list[index]
+        img_name = os.path.basename(img_path)
         img = cv2.imread(img_path, cv2.IMREAD_COLOR)
         h, w, _ = img.shape
 
@@ -139,6 +140,7 @@ class SCHPDataset(data.Dataset):
         input = self.transform(input)
         meta = {
             'name': img_name,
+            'path': img_path,
             'center': person_center,
             'height': h,
             'width': w,

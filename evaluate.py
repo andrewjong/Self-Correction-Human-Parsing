@@ -108,16 +108,15 @@ def main():
     dataset = SCHPDataset(root=args.input, input_size=input_size, transform=transform)
     dataloader = DataLoader(dataset)
 
-    if not os.path.exists(args.output):
-        os.makedirs(args.output)
-
     palette = get_palette(num_classes)
 
+    print(f"Found {len(dataloader)} files")
     with torch.no_grad():
         for idx, batch in tqdm(enumerate(dataloader), total=len(dataloader)):
 
             image, meta = batch
             img_name = meta['name'][0]
+            img_path = meta['path'][0]
             c = meta['center'].numpy()[0]
             s = meta['scale'].numpy()[0]
             w = meta['width'].numpy()[0]
@@ -130,15 +129,19 @@ def main():
             upsample_output = upsample_output.permute(1, 2, 0) #CHW -> HWC
 
             logits_result = transform_logits(upsample_output.data.cpu().numpy(), c, s, w, h, input_size=input_size)
+
             parsing_result = np.argmax(logits_result, axis=2)
 
-            parsing_result_path = os.path.join(args.output, img_name[:-4]+'.png')
+            img_subpath = img_path.replace(args.input, "").lstrip("/")
+            parsing_result_path = os.path.join(args.output, img_subpath[:-4]+'.png')
+            os.makedirs(os.path.dirname(parsing_result_path), exist_ok=True)
+
             output_img = Image.fromarray(np.asarray(parsing_result, dtype=np.uint8))
             output_img.putpalette(palette)  # colors the labels it seems
             output_img.save(parsing_result_path)
             if args.logits:
                 fname = img_name[:-4]
-                logits_result_path = os.path.join(args.output, img_name[:-4] + '.npy')
+                logits_result_path = os.path.join(args.output, img_subpath[:-4] + '.npy')
                 if args.argmax_logits:
                     logits_result_path += "c"  # c for compressed
                     result = parsing_result
