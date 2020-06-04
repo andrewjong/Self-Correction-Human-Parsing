@@ -1,3 +1,7 @@
+USE ME FOR ANY EASY CLOTH SEGMENTATION.
+
+I added small changes on top, including 1) a progress bar 2) will recursively find .pngs under the Input\_Directory, and Output\_Directory will reflect the input folder structure.
+
 # Self Correction for Human Parsing
 
 An out-of-box human parsing representation extractor. Also the 3rd LIP challenge winner solution!
