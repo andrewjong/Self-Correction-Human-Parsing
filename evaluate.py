@@ -60,6 +60,7 @@ def get_arguments():
     parser.add_argument("--output", type=str, default='', help="path of output image folder.")
     parser.add_argument("--logits", action='store_true', default=False, help="whether to save the logits.")
     parser.add_argument("--argmax_logits", action='store_true', default=False, help="Save logits in compressed argmax form")
+    parser.add_argument("--postfix_filename", default="", help="add a postfix to the filenames, before the file extension")
 
     return parser.parse_args()
 
@@ -133,7 +134,7 @@ def main():
             parsing_result = np.argmax(logits_result, axis=2)
 
             img_subpath = img_path.replace(args.input, "").lstrip("/")
-            parsing_result_path = os.path.join(args.output, img_subpath[:-4]+'.png')
+            parsing_result_path = os.path.join(args.output, img_subpath[:-4] + args.postfix_filename + '.png')
             os.makedirs(os.path.dirname(parsing_result_path), exist_ok=True)
 
             output_img = Image.fromarray(np.asarray(parsing_result, dtype=np.uint8))
@@ -141,7 +142,7 @@ def main():
             output_img.save(parsing_result_path)
             if args.logits:
                 fname = img_name[:-4]
-                logits_result_path = os.path.join(args.output, img_subpath[:-4] + '.npy')
+                logits_result_path = os.path.join(args.output, img_subpath[:-4] + args.postfix_filename + '.npy')
                 if args.argmax_logits:
                     logits_result_path += "c"  # c for compressed
                     result = parsing_result
