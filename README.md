@@ -1,6 +1,6 @@
 USE ME FOR ANY EASY CLOTH SEGMENTATION.
 
-I added small changes on top, including 1) a progress bar 2) will recursively find .pngs under the Input\_Directory, and Output\_Directory will reflect the input folder structure.
+I added small changes on top, including 1) a progress bar 2) will recursively find .pngs under the Input\_Directory, and 3) Output\_Directory will reflect the Input\_Directory folder structure.
 
 # Self Correction for Human Parsing
 
@@ -34,7 +34,7 @@ Coming Soon! Stay tuned!
 ## Requirements
 
 ```
-Python >= 3.5, PyTorch >= 0.4
+Python >= 3.5, PyTorch >= 0.4, tqdm (for the progress bar, install with pip)
 ```
 
 ## Trained models
